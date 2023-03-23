@@ -1,43 +1,67 @@
 <template>
-  <div class="container">
-    <div class="block" :class="{ animate: animatedBlock }"></div>
-    <button @click="animateBlock">Animate</button>
-  </div>
-  <div class="container">
-    <transition name="para">
-      <p v-if="paraIsVisible">This is only sometimes visible...</p>
-    </transition>
-    <button @click="toggleParagraph">Toggle Paragraph</button>
-  </div>
-
-  <div class="container">
+  <router-view v-slot="slotProps">
     <transition name="fade-button" mode="out-in">
-      <button @click="showUser" v-if="!usersAreVisible">Show users</button>
-      <button @click="hideUser" v-else>Hide users</button>
+      <component :is="slotProps.Component"></component>
     </transition>
-  </div>
-  <!-- <transition name="modal"> -->
-  <base-modal @close="hideDialog" :open="dialogIsVisible">
-    <p>This is a test dialog!</p>
-    <button @click="hideDialog">Close it!</button>
-  </base-modal>
-  <!-- </transition> -->
-  <div class="container">
-    <button @click="showDialog">Show Dialog</button>
-  </div>
+  </router-view>
 </template>
 
 <script>
+// import UsersList from './components/UsersList.vue';
+
 export default {
+  // components: {
+  //   UsersList,
+  // },
   data() {
     return {
       animatedBlock: false,
       dialogIsVisible: false,
       paraIsVisible: false,
       usersAreVisible: false,
+      enterInterval: null,
+      leaveInterval: null,
     };
   },
   methods: {
+    enterCancelled() {
+      clearInterval(this.enterInterval);
+    },
+    leaveCancelled() {
+      clearInterval(this.leaveInterval);
+    },
+    beforeEnter(el) {
+      el.style.opacity = 0;
+    },
+    enter(el, done) {
+      let round = 1;
+      this.enterInterval = setInterval(() => {
+        el.style.opacity = round * 0.01;
+        round++;
+        if (round > 100) {
+          clearInterval(this.enterInterval);
+          done();
+        }
+      }, 20);
+    },
+    afterEnter() {
+      console.log('after enter');
+    },
+    beforeLeave(el) {
+      console.log(el);
+      console.log('before leave...');
+    },
+    leave(el, done) {
+      let round = 100;
+      this.leaveInterval = setInterval(() => {
+        el.style.opacity = round * 0.01;
+        round--;
+        if (round === 0) {
+          clearInterval(this.leaveInterval);
+          done();
+        }
+      }, 10);
+    },
     showUser() {
       this.usersAreVisible = true;
     },
@@ -123,13 +147,13 @@ button:active {
   transform: translateY(0);
 } */
 
-.para-enter-active {
+/* .para-enter-active {
   animation: slide-scale 0.3s ease-out;
 }
 
 .para-leave-active {
   animation: slide-scale 0.3s ease-out;
-}
+} */
 
 /* .v-leave-from {
   opacity: 1;
@@ -188,5 +212,13 @@ button:active {
   100% {
     transform: translateX(-150px) scale(1);
   }
+}
+
+.route-enter-active {
+  animation: slide-scale 0.5s ease-out;
+}
+
+.route-leave-active {
+  animation: slide-scale 0.5s ease-in;
 }
 </style>
