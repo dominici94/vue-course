@@ -1,44 +1,65 @@
 <template>
   <section class="container">
-    <h2>{{ user.name }}</h2>
+    <h2>{{ uName }}</h2>
     <h3>{{ user.age }}</h3>
+    <button @click="setAge">Change Age</button>
+    <div>
+      <input type="text" placeholder="First Name" />
+      <input type="text" placeholder="Last Name" />
+    </div>
   </section>
 </template>
 
 <script>
-// import { ref } from 'vue';
-import { reactive } from 'vue';
+// import { ref, reactive, isReactive, isRef } from 'vue';
+import { ref, reactive, computed } from 'vue';
 
 export default {
   setup() {
     // const uName = ref('Maximilian');
     // // const uName = 'Maximilian';
     // const uAge = ref(31);
-    // const user = ref({
-    //   name: 'Maximilian',
-    //   age: 31,
-    // });
     const user = reactive({
       name: 'Maximilian',
       age: 31,
     });
+
+    const firstName = ref('');
+    const lastName = ref('');
+    // const user = reactive({
+    //   name: 'Maximilian',
+    //   age: 31,
+    // });
+
+    const uName = computed(function () {
+      return firstName.value + ' ' + lastName.value;
+    });
+
+    // console.log(isRef(uAge));
+    // console.log(isReactive(user), user.age);
 
     // setTimeout(function () {
     //   uName.value = 'Max';
     //   uAge.value = 32;
     // }, 2000);
 
-    setTimeout(function () {
-      // user.value.name = 'Max';
-      // user.value.age = 32;
-      user.name = 'Max';
+    // setTimeout(function () {
+    //   // user.value.name = 'Max';
+    //   // user.value.age = 32;
+    //   user.name = 'Max';
+    //   user.age = 32;
+    // }, 2000);
+
+    function setNewAge() {
       user.age = 32;
-    }, 2000);
+    }
 
     return {
       // userName: user.value.name,
       // age: user.value.age,
       user: user,
+      setAge: setNewAge,
+      uName,
     };
   },
   // data() {
